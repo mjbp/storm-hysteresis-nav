@@ -11,11 +11,6 @@ Cursor-predicting hover menu
     
 
 ## Usage
-HTML
-```
-
-```
-
 JS
 ```
 npm i -S storm-hysteresis-nav
@@ -67,4 +62,4 @@ None
 MIT
 
 ## Credit
-Inspiring by https://github.com/kamens/jQuery-menu-aim
+Inspired by http://bjk5.com/post/44698559168/breaking-down-amazons-mega-dropdown
