@@ -18,42 +18,64 @@ let mouseLocations = [],
 
 const StormHysteresisMenu = {
 	init() {
-        this.items = [].slice.call(this.node.querySelectorAll(this.settings.itemSelector));
-        this.initListeners();
-        this.activeRow = false;
+		this.items = [].slice.call(this.node.querySelectorAll(this.settings.itemSelector));
+		this.links = this.items.reduce((acc, curr) => {
+			if(curr.firstElementChild.hasAttribute('aria-haspopup')) acc.push(curr.firstElementChild);
+			return acc;
+		}, []);
+		this.initListeners();
+		this.boundHandleTab = this.handleTab.bind(this);
+		this.activeRow = false;
 		return this;
 	},
-    initListeners(){
-        this.items.forEach((item, i) => item.addEventListener('mouseenter', this.handleMouseEnter.bind(this, i)));
-        this.node.addEventListener('mouseleave', this.handleMouseLeaveNav.bind(this))
-        document.addEventListener('mousemove', this.handleMouseMove.bind(this));
-    },
-    handleMouseEnter(i){
-        if (timeoutId) clearTimeout(timeoutId);
-        this.possiblyActivate(i);
-    },
-    handleMouseLeaveNav(){
-        if (timeoutId) clearTimeout(timeoutId);
+	initListeners(){
+		this.items.forEach((item, i) => item.addEventListener('mouseenter', this.handleMouseEnter.bind(this, i)));
+		this.links.forEach((item, i) => item.addEventListener('focus', () => {
+			window.setTimeout(() => {
+				this.activeRow !== false && this.setInactive(this.activeRow);
+				this.setActive(i);
+			}, 0);
+		}));
+		this.node.addEventListener('mouseleave', this.handleMouseLeaveNav.bind(this));
+		this.links.forEach((item, i) => item.addEventListener('blur', this.handleBlur.bind(this, i)));
+		document.addEventListener('mousemove', this.handleMouseMove.bind(this));
+	},
+	handleTab(){
+		if(!this.items[this.activeRow].contains(document.activeElement)) {
+			this.setInactive(this.activeRow);
+			document.removeEventListener('focusin', this.boundHandleTab);
+		}
+	},
+	handleBlur(i){
+		window.setTimeout(() => {
+			if(!this.items[i].contains(document.activeElement)) this.setInactive(i);
+			else document.addEventListener('focusin', this.boundHandleTab);
+		}, 0);
+	},
+	handleMouseEnter(i){
+		if (timeoutId) clearTimeout(timeoutId);
+		this.possiblyActivate(i);
+	},
+	handleMouseLeaveNav(){
+		if (timeoutId) clearTimeout(timeoutId);
 
-        // If exitMenu is supplied and returns true, deactivate the
-        // currently active row on menu exit.
-        this.activeRow !== false && this.setInactive(this.activeRow);
-        this.activeRow = false;
-    },
-    handleMouseMove(e){
-        mouseLocations.push({x: e.pageX, y: e.pageY});
+		this.activeRow !== false && this.setInactive(this.activeRow);
+		this.activeRow = false;
+	},
+	handleMouseMove(e){
+		mouseLocations.push({x: e.pageX, y: e.pageY});
 
-        if (mouseLocations.length > CONSTANTS.MOUSE_LOCS_TRACKED) mouseLocations.shift();
-    },
-    possiblyActivate(i){
-        let delay = this.activationDelay();
+		if (mouseLocations.length > CONSTANTS.MOUSE_LOCS_TRACKED) mouseLocations.shift();
+	},
+	possiblyActivate(i){
+		let delay = this.activationDelay();
 
-        if (delay) {
-            timeoutId = setTimeout(() => this.possiblyActivate(i), delay);
-        } else {
-            this.setActive(i);
-        }
-    },
+		if (delay) {
+			timeoutId = setTimeout(() => this.possiblyActivate(i), delay);
+		} else {
+			this.setActive(i);
+		}
+	},
     activationDelay(){
         if (this.activeRow === false) return 0;
 
@@ -137,20 +159,22 @@ const StormHysteresisMenu = {
             return 0;
 
     },
-    setActive(i){
-        if(this.activeRow === i) return;
-        this.activeRow !== false && this.setInactive(this.activeRow);
-        this.items[i].classList.add(this.settings.activeClassName);
-        this.activeRow = i;
-    },
-    setInactive(i){
-        this.activeRow = false;
-        this.items[i].classList.add(this.settings.animatingClassName);
-        window.setTimeout(() => {
-            this.items[i].classList.remove(this.settings.activeClassName);
-            this.items[i].classList.remove(this.settings.animatingClassName);
-        }, this.settings.animationDelay);
-    }
+	setActive(i){
+		if(this.activeRow === i) return;
+		this.activeRow !== false && this.setInactive(this.activeRow);
+		this.items[i].classList.add(this.settings.activeClassName);
+		this.links[i] && this.links[i].setAttribute('aria-expanded', 'true');
+		this.activeRow = i;
+	},
+	setInactive(i){
+		this.activeRow = false;
+		this.items[i].classList.add(this.settings.animatingClassName);
+		window.setTimeout(() => {
+			this.items[i].classList.remove(this.settings.activeClassName);
+			this.items[i].classList.remove(this.settings.animatingClassName);
+			this.links[i] && this.links[i].setAttribute('aria-expanded', 'false');
+		}, this.settings.animationDelay);
+	}
 };
 
 const init = (sel, opts) => {

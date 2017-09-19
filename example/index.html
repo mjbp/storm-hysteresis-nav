@@ -93,6 +93,9 @@
             height:3rem;
             position: relative;
         }
+        .nav-primary__link:focus {
+            outline:1px solid red;
+        }
         .nav-primary__item.is--active:before{
             bottom:0;
             display:block;
@@ -165,7 +168,7 @@
         <nav id="navigation" class="nav-primary">
             <ul class="nav-primary__list js-nav">
                 <li class="nav-primary__item js-hysteresis-nav-item">
-                    <a href="#" class="nav-primary__link">Item</a>
+                    <a href="#" class="nav-primary__link" aria-haspopup="true" aria-expanded="false">Item</a>
                     <div class="nav-secondary">
                         <div class="nav-secondary__col">
                             <h2 class="nav-secondary__title">Heading</h2>
@@ -222,7 +225,7 @@
                     </div>
                 </li>
                 <li class="nav-primary__item js-hysteresis-nav-item">
-                    <a href="#" class="nav-primary__link">Item</a>
+                    <a href="#" class="nav-primary__link" aria-haspopup="true" aria-expanded="false">Item</a>
                     <div class="nav-secondary">
                         <div class="nav-secondary__col">
                             <h2 class="nav-secondary__title">Heading</h2>
@@ -279,7 +282,7 @@
                     </div>
                 </li>
                 <li class="nav-primary__item js-hysteresis-nav-item">
-                    <a href="#" class="nav-primary__link">Item</a>
+                    <a href="#" class="nav-primary__link" aria-haspopup="true" aria-expanded="false">Item</a>
                     <div class="nav-secondary">
                         <div class="nav-secondary__col">
                             <h2 class="nav-secondary__title">Heading</h2>
@@ -336,7 +339,7 @@
                     </div>
                 </li>
                 <li class="nav-primary__item js-hysteresis-nav-item">
-                    <a href="#" class="nav-primary__link">Item</a>
+                    <a href="#" class="nav-primary__link" aria-haspopup="true" aria-expanded="false">Item</a>
                     <div class="nav-secondary">
                         <div class="nav-secondary__col">
                             <h2 class="nav-secondary__title">Heading</h2>
